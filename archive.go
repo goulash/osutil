@@ -22,6 +22,7 @@ func ReadFileFromArchive(archive, file string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer d.Close()
 
 	return ReadFileFromTar(d, file)
 }
@@ -48,13 +49,18 @@ func ReadFileFromTar(r io.Reader, file string) ([]byte, error) {
 	return nil, fmt.Errorf("file '%s' not found", file)
 }
 
+// Decompressor is a universal decompressor that, given a filepath,
+// chooses the appropriate decompression algorithm.
+//
+// At the moment, only the gzip, bzip2, and lzma (as in ".xz") are
+// supported. The decompressor needs to be closed after usage.
 type Decompressor struct {
 	file   os.File
 	reader io.Reader
 	closer io.Closer
 }
 
-func NewDecompressor(filepath string) (io.ReadCloser, error) {
+func NewDecompressor(filepath string) (*Decompressor, error) {
 	var d Decompressor
 	var err error
 
