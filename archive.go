@@ -55,7 +55,7 @@ func ReadFileFromTar(r io.Reader, file string) ([]byte, error) {
 // At the moment, only the gzip, bzip2, and lzma (as in ".xz") are
 // supported. The decompressor needs to be closed after usage.
 type Decompressor struct {
-	file   os.File
+	file   *os.File
 	reader io.Reader
 	closer io.Closer
 }
@@ -100,11 +100,11 @@ func (d *Decompressor) Read(p []byte) (n int, err error) {
 }
 
 func (d *Decompressor) Close() error {
-	if closer != nil {
-		err := closer.Close()
+	if d.closer != nil {
+		err := d.closer.Close()
 		if err != nil {
 			return err
 		}
 	}
-	return file.Close()
+	return d.file.Close()
 }
