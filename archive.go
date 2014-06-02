@@ -17,6 +17,12 @@ import (
 	lzma "github.com/remyoudompheng/go-liblzma"
 )
 
+// ReadFileFromArchive tries to read the file specified from the (compressed) archive.
+// Archive formats supported are:
+//	.tar
+//	.tar.gz
+//	.tar.bz2
+//	.tar.xz
 func ReadFileFromArchive(archive, file string) ([]byte, error) {
 	d, err := NewDecompressor(archive)
 	if err != nil {
@@ -27,6 +33,8 @@ func ReadFileFromArchive(archive, file string) ([]byte, error) {
 	return ReadFileFromTar(d, file)
 }
 
+// ReadFileFromTar tries to read the file specified from an opened tar file.
+// This function is used together with ReadFileFromArchive, hence the io.Reader.
 func ReadFileFromTar(r io.Reader, file string) ([]byte, error) {
 	tr := tar.NewReader(r)
 	for {
@@ -60,6 +68,8 @@ type Decompressor struct {
 	closer io.Closer
 }
 
+// NewDecompressor creates a new decompressor based on the file extension
+// of the given file. The returned Decompressor can be Read and Closed.
 func NewDecompressor(filepath string) (*Decompressor, error) {
 	var d Decompressor
 	var err error
