@@ -5,57 +5,56 @@
 package util
 
 import (
-	"errors"
 	"fmt"
 	"os"
 )
 
-// IsExists returns exists = true if the given file exists, regardless whether
+// Exists returns exists = true if the given file exists, regardless whether
 // it is a file or a directory. Normally you will probably want to use the more
-// specific versions: IsFileExists and IsDirectoryExists.
-func IsExists(path string) (exists bool, err error) {
-	exists, _, err = isExists(path)
-	return
+// specific versions: FileExists and DirectoryExists.
+func Exists(path string) (ex bool, err error) {
+	ex, _, err = exists(path)
+	return ex, err
 }
 
-// IsFileExists returns exists = true if the file exists and is not
+// FileExists returns exists = true if the file exists and is not
 // a directory, and returns err != nil if any other error occured (such as
 // permission denied).
-func IsFileExists(path string) (exists bool, err error) {
+func FileExists(path string) (ex bool, err error) {
 	var stat os.FileInfo
 
-	exists, stat, err = isExists(path)
+	ex, stat, err = exists(path)
 	if err != nil && stat.IsDir() {
-		err = errors.New(fmt.Sprintf("%s exists but is a directory not a file", path))
+		err = fmt.Errorf("%s exists but is a directory not a file", path)
 	}
-	return
+	return ex, err
 }
 
-// IsDirectoryExists returns exists = true if the file exists and is
+// DirectoryExists returns exists = true if the file exists and is
 // a directory, and returns err != nil if any other error occured (such as
 // permission denied).
-func IsDirectoryExists(path string) (exists bool, err error) {
+func DirectoryExists(path string) (ex bool, err error) {
 	var stat os.FileInfo
 
-	exists, stat, err = isExists(path)
+	ex, stat, err = exists(path)
 	if err != nil && !stat.IsDir() {
-		err = errors.New(fmt.Sprintf("%s exists but is not a directory", path))
+		err = fmt.Errorf("%s exists but is not a directory", path)
 	}
-	return
+	return ex, err
 }
 
-// isExists does the hard work for IsExist, IsFileExist, and IsDirectoryExists,
-// returning exists = true if the file given by path exists.
-func isExists(path string) (exists bool, stat os.FileInfo, err error) {
+// exists does the hard work for Exists, FileExists, and DirectoryExists,
+// returning ex = true if the file given by path exists.
+func exists(path string) (ex bool, stat os.FileInfo, err error) {
 	stat, err = os.Stat(path)
 
-	exists = true
+	ex = true
 	if err != nil {
-		// exists = true if file exists
-		exists = !os.IsNotExist(err)
-		if !exists {
+		// ex = true if file exists
+		ex = !os.IsNotExist(err)
+		if !ex {
 			err = nil
 		}
 	}
-	return
+	return ex, stat, err
 }
