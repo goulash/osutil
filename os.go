@@ -30,10 +30,10 @@ func FileExists(path string) (ex bool, err error) {
 	return ex, err
 }
 
-// DirectoryExists returns exists = true if the file exists and is
+// DirExists returns exists = true if the file exists and is
 // a directory, and returns err != nil if any other error occured (such as
 // permission denied).
-func DirectoryExists(path string) (ex bool, err error) {
+func DirExists(path string) (ex bool, err error) {
 	var stat os.FileInfo
 
 	ex, stat, err = exists(path)
@@ -43,7 +43,7 @@ func DirectoryExists(path string) (ex bool, err error) {
 	return ex, err
 }
 
-// exists does the hard work for Exists, FileExists, and DirectoryExists,
+// exists does the hard work for Exists, FileExists, and DirExists,
 // returning ex = true if the file given by path exists.
 func exists(path string) (ex bool, stat os.FileInfo, err error) {
 	stat, err = os.Stat(path)
