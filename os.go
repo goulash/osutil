@@ -166,7 +166,7 @@ func FileExists(path string) (ex bool, err error) {
 	var stat os.FileInfo
 
 	ex, stat, err = exists(path)
-	if err == nil && stat.IsDir() {
+	if stat != nil && stat.IsDir() {
 		return false, FileTypeError{path}
 	}
 	return ex, err
@@ -179,7 +179,7 @@ func DirExists(path string) (ex bool, err error) {
 	var stat os.FileInfo
 
 	ex, stat, err = exists(path)
-	if err == nil && !stat.IsDir() {
+	if stat != nil && !stat.IsDir() {
 		return false, FileTypeError{path}
 	}
 	return ex, err
