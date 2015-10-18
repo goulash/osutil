@@ -100,8 +100,13 @@ func CopyFileLazy(src, dst string) error {
 //
 // If either file is a directory, FileTypeError is returned.
 func SameContents(src, dst string) (same bool, err error) {
+	ex, err := FileExists(dst)
+	if err != nil || !ex {
+		return false, err
+	}
+
 	same, err = SameFile(src, dst)
-	if err != nil {
+	if err != nil || same {
 		return same, err
 	}
 

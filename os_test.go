@@ -91,3 +91,11 @@ func TestFileCopy(z *testing.T) {
 	assert.Nil(err)
 	assert.False(same, "second copy should overwrite first")
 }
+
+func TestFileCopyLazy(z *testing.T) {
+	assert := assert.New(z)
+
+	err := CopyFileLazy(testfile, testdest)
+	assert.Nil(err)
+	defer os.Remove(testdest)
+}
